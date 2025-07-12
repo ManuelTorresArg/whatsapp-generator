@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurador WhatsApp Business</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #25d366, #128c7e);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #25d366;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-container {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #e6fffa;
+            border-left: 4px solid #25d366;
+        }
+
+        .progress-step.completed {
+            background: #f0fff4;
+            border-left: 4px solid #38a169;
+        }
+
+        .progress-step.error {
+            background: #fed7d7;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+
+        .qr-container {
+            display: none;
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .qr-code {
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .qr-instructions {
+            color: #4a5568;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .config-url {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #e6fffa;
+            border-radius: 8px;
+            border: 1px solid #25d366;
+        }
+
+        .config-url strong {
+            color: #128c7e;
+        }
+
+        .business-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .business-type {
+            padding: 10px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .business-type:hover {
+            border-color: #25d366;
+            background: #e6fffa;
+        }
+
+        .business-type.selected {
+            border-color: #25d366;
+            background: #e6fffa;
+            color: #128c7e;
+        }
+
+        .api-config {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .api-config h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .api-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .api-row input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><img src="knowhub_logo.jpeg" alt="Knowhub Logo" style="height: 2em; vertical-align: middle; margin-right: 0.5em;">Generador WhatsApp - Smart Partner</h1>
+            <p>Configura tu chatbot automatizado en minutos</p>
+        </div>
+
+        <form id="configForm">
+            <div class="form-group">
+                <label for="phone">📱 Número de Teléfono</label>
+                <input type="tel" id="phone" name="phone" placeholder="+54 9 11 1234-5678" required>
+            </div>
+
+            <div class="form-group">
+                <label for="business">🏢 Tipo de Negocio</label>
+                <select id="business" name="business" required>
+                    <option value="">Selecciona tu tipo de negocio</option>
+                    <option value="restaurant">Restaurante</option>
+                    <option value="retail">Tienda/Retail</option>
+                    <option value="services">Servicios</option>
+                    <option value="healthcare">Salud</option>
+                    <option value="education">Educación</option>
+                    <option value="real-estate">Inmobiliaria</option>
+                    <option value="automotive">Automotriz</option>
+                    <option value="beauty">Belleza</option>
+                    <option value="fitness">Fitness</option>
+                    <option value="tech">Tecnología</option>
+                    <option value="other">Otro</option>
+                </select>
+            </div>
+
+            <div class="api-config">
+                <h3>⚙️ Configuración de APIs</h3>
+                <div class="api-row">
+                    <input type="text" id="evolutionUrl" placeholder="Evolution API URL" value="https://api.evolution.com">
+                    <input type="text" id="evolutionKey" placeholder="Evolution API Key" required>
+                    <button type="button" onclick="testEvolutionConnection()" style="padding: 10px; background: #4299e1; color: white; border: none; border-radius: 6px; cursor: pointer;">🔍 Probar</button>
+                </div>
+                <div class="api-row">
+                    <input type="text" id="n8nUrl" placeholder="N8N API URL" value="https://n8n.yourdomain.com">
+                    <input type="text" id="n8nKey" placeholder="N8N API Key" required>
+                </div>
+                <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                    💡 <strong>Consejo:</strong> Usa el botón "Probar" para verificar tu conexión con Evolution API antes de generar el QR.
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="generateBtn">
+                🎯 Generar QR y Configurar Bot
+            </button>
+        </form>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-step" id="step1">
+                <div class="step-icon">⏳</div>
+                <div>Conectando con Evolution API...</div>
+            </div>
+            <div class="progress-step" id="step2">
+                <div class="step-icon">⏳</div>
+                <div>Generando código QR...</div>
+            </div>
+            <div class="progress-step" id="step3">
+                <div class="step-icon">⏳</div>
+                <div>Creando workflow en N8N...</div>
+            </div>
+            <div class="progress-step" id="step4">
+                <div class="step-icon">⏳</div>
+                <div>Configurando webhook...</div>
+            </div>
+            <div class="progress-step" id="step5">
+                <div class="step-icon">⏳</div>
+                <div>Finalizando configuración...</div>
+            </div>
+        </div>
+
+        <div class="qr-container" id="qrContainer">
+            <div class="qr-code" id="qrCode">
+                <div>Código QR aparecerá aquí</div>
+            </div>
+            <div class="qr-instructions">
+                <strong>📱 Instrucciones:</strong><br>
+                1. Abre WhatsApp en tu teléfono<br>
+                2. Ve a Configuración > Dispositivos vinculados<br>
+                3. Toca "Vincular un dispositivo"<br>
+                4. Escanea este código QR
+            </div>
+        </div>
+
+        <div class="config-url" id="configUrl">
+            <strong>✅ Configuración completada:</strong><br>
+            <span id="webhookUrl"></span>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de las APIs
+        const API_CONFIG = {
+            evolution: {
+                baseUrl: '',
+                apiKey: '',
+                instanceName: ''
+            },
+            n8n: {
+                baseUrl: '',
+                apiKey: '',
+                workflowId: ''
+            }
+        };
+
+        // Plantillas de workflows por tipo de negocio
+        const BUSINESS_WORKFLOWS = {
+            restaurant: {
+                name: "Restaurante ChatBot",
+                nodes: [
+                    {
+                        type: "webhook",
+                        name: "WhatsApp Webhook",
+                        parameters: {
+                            path: "/whatsapp-webhook",
+                            method: "POST"
+                        }
+                    },
+                    {
+                        type: "function",
+                        name: "Procesar Mensaje",
+                        parameters: {
+                            functionCode: `
+                                const message = items[0].json.body;
+                                const phone = items[0].json.from;
+                                
+                                // Lógica básica de respuesta para restaurante
+                                let response = "";
+                                if (message.toLowerCase().includes("menu")) {
+                                    response = "🍽️ ¡Hola! Aquí tienes nuestro menú:\\n\\n🍕 Pizzas: $15-25\\n🍔 Hamburguesas: $12-18\\n🥗 Ensaladas: $8-12\\n\\n¿Qué te gustaría ordenar?";
+                                } else if (message.toLowerCase().includes("hola")) {
+                                    response = "¡Hola! 👋 Bienvenido a nuestro restaurante. Escribe 'menu' para ver nuestras opciones.";
+                                } else {
+                                    response = "Gracias por tu mensaje. Un momento, te conectamos con nuestro equipo. 🍽️";
+                                }
+                                
+                                return [{
+                                    json: {
+                                        to: phone,
+                                        message: response
+                                    }
+                                }];
+                            `
+                        }
+                    }
+                ]
+            },
+            retail: {
+                name: "Tienda ChatBot",
+                nodes: [
+                    {
+                        type: "webhook",
+                        name: "WhatsApp Webhook",
+                        parameters: {
+                            path: "/whatsapp-webhook",
+                            method: "POST"
+                        }
+                    },
+                    {
+                        type: "function",
+                        name: "Procesar Mensaje",
+                        parameters: {
+                            functionCode: `
+                                const message = items[0].json.body;
+                                const phone = items[0].json.from;
+                                
+                                let response = "";
+                                if (message.toLowerCase().includes("catalogo") || message.toLowerCase().includes("productos")) {
+                                    response = "🛍️ ¡Hola! Aquí tienes nuestro catálogo:\\n\\n👕 Ropa: 20% OFF\\n👟 Calzado: Nuevas llegadas\\n🎒 Accesorios: Promoción 2x1\\n\\n¿Qué producto te interesa?";
+                                } else if (message.toLowerCase().includes("hola")) {
+                                    response = "¡Hola! 👋 Bienvenido a nuestra tienda. Escribe 'catalogo' para ver nuestros productos.";
+                                } else {
+                                    response = "Gracias por tu consulta. Te conectamos con ventas. 🛒";
+                                }
+                                
+                                return [{
+                                    json: {
+                                        to: phone,
+                                        message: response
+                                    }
+                                }];
+                            `
+                        }
+                    }
+                ]
+            },
+            services: {
+                name: "Servicios ChatBot",
+                nodes: [
+                    {
+                        type: "webhook",
+                        name: "WhatsApp Webhook",
+                        parameters: {
+                            path: "/whatsapp-webhook",
+                            method: "POST"
+                        }
+                    },
+                    {
+                        type: "function",
+                        name: "Procesar Mensaje",
+                        parameters: {
+                            functionCode: `
+                                const message = items[0].json.body;
+                                const phone = items[0].json.from;
+                                
+                                let response = "";
+                                if (message.toLowerCase().includes("servicio") || message.toLowerCase().includes("ayuda")) {
+                                    response = "🛠️ ¡Hola! Nuestros servicios:\\n\\n⚡ Mantenimiento\\n🔧 Reparaciones\\n📋 Consultoría\\n\\n¿En qué podemos ayudarte?";
+                                } else if (message.toLowerCase().includes("hola")) {
+                                    response = "¡Hola! 👋 ¿Necesitas algún servicio? Escribe 'servicios' para ver nuestras opciones.";
+                                } else {
+                                    response = "Gracias por contactarnos. Te conectamos con nuestro equipo técnico. 🛠️";
+                                }
+                                
+                                return [{
+                                    json: {
+                                        to: phone,
+                                        message: response
+                                    }
+                                }];
+                            `
+                        }
+                    }
+                ]
+            }
+        };
+
+        // Función de validación mejorada
+        function validateInputs() {
+            const phone = document.getElementById('phone').value.trim();
+            const business = document.getElementById('business').value;
+            const evolutionUrl = document.getElementById('evolutionUrl').value.trim();
+            const evolutionKey = document.getElementById('evolutionKey').value.trim();
+            const n8nUrl = document.getElementById('n8nUrl').value.trim();
+            const n8nKey = document.getElementById('n8nKey').value.trim();
+
+            // Validar campos requeridos
+            if (!phone || !business || !evolutionKey || !n8nKey) {
+                throw new Error('Por favor completa todos los campos requeridos');
+            }
+
+            // Validar formato de teléfono
+            const phoneRegex = /^\+?[\d\s\-\(\)]+$/;
+            if (!phoneRegex.test(phone)) {
+                throw new Error('Formato de teléfono inválido. Usa: +54 9 11 1234-5678');
+            }
+
+            // Validar URLs
+            if (evolutionUrl && !evolutionUrl.startsWith('http')) {
+                throw new Error('URL de Evolution API debe comenzar con http:// o https://');
+            }
+
+            if (n8nUrl && !n8nUrl.startsWith('http')) {
+                throw new Error('URL de N8N debe comenzar con http:// o https://');
+            }
+
+            // Validar API Keys (mínimo 10 caracteres)
+            if (evolutionKey.length < 10) {
+                throw new Error('API Key de Evolution API parece ser muy corta');
+            }
+
+            if (n8nKey.length < 10) {
+                throw new Error('API Key de N8N parece ser muy corta');
+            }
+
+            return { phone, business, evolutionUrl, evolutionKey, n8nUrl, n8nKey };
+        }
+
+        document.getElementById('configForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            try {
+                // Validar entradas
+                const inputs = validateInputs();
+                console.log('[DEBUG] Entradas del formulario:', inputs);
+                
+                // Configurar APIs
+                API_CONFIG.evolution = {
+                    baseUrl: inputs.evolutionUrl,
+                    apiKey: inputs.evolutionKey,
+                    instanceName: `instance_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+                };
+                
+                API_CONFIG.n8n = {
+                    baseUrl: inputs.n8nUrl,
+                    apiKey: inputs.n8nKey,
+                    workflowId: ''
+                };
+
+                console.log('[DEBUG] Configuración de API_CONFIG:', API_CONFIG);
+
+                // Mostrar progreso
+                document.getElementById('progressContainer').style.display = 'block';
+                document.getElementById('generateBtn').disabled = true;
+
+                await executeWorkflow(inputs.phone, inputs.business);
+            } catch (error) {
+                console.error('[DEBUG] Error en el proceso:', error);
+                alert('Error en la configuración: ' + error.message);
+                document.getElementById('generateBtn').disabled = false;
+                
+                // Ocultar progreso en caso de error
+                document.getElementById('progressContainer').style.display = 'none';
+            }
+        });
+
+        async function executeWorkflow(phone, business) {
+            console.log('[DEBUG] --- INICIO executeWorkflow ---');
+            const workflowStart = Date.now();
+            // Paso 1: Crear instancia en Evolution API
+            await updateStep('step1', 'active');
+            await delay(1000);
+            console.log('[DEBUG] Ejecutando createEvolutionInstance con phone:', phone);
+            const instanceCreated = await createEvolutionInstance(phone);
+            if (instanceCreated) {
+                await updateStep('step1', 'completed', '✅');
+            } else {
+                await updateStep('step1', 'error', '❌');
+                throw new Error('Error al crear instancia en Evolution API');
+            }
+
+            // Paso 2: Generar QR
+            await updateStep('step2', 'active');
+            await delay(1000);
+            console.log('[DEBUG] Ejecutando generateQRCode');
+            const qrCode = await generateQRCode();
+            if (qrCode) {
+                await updateStep('step2', 'completed', '✅');
+                showQRCode(qrCode);
+            } else {
+                await updateStep('step2', 'error', '❌');
+                throw new Error('Error al generar código QR');
+            }
+
+            // Paso 3: Crear workflow en N8N
+            await updateStep('step3', 'active');
+            await delay(2000);
+            console.log('[DEBUG] Ejecutando createN8NWorkflow con business:', business);
+            const workflowCreated = await createN8NWorkflow(business);
+            if (workflowCreated) {
+                await updateStep('step3', 'completed', '✅');
+            } else {
+                await updateStep('step3', 'error', '❌');
+                throw new Error('Error al crear workflow en N8N');
+            }
+
+            // Paso 4: Configurar webhook
+            await updateStep('step4', 'active');
+            await delay(1000);
+            console.log('[DEBUG] Ejecutando setupWebhook');
+            const webhookUrl = await setupWebhook();
+            if (webhookUrl) {
+                await updateStep('step4', 'completed', '✅');
+            } else {
+                await updateStep('step4', 'error', '❌');
+                throw new Error('Error al configurar webhook');
+            }
+
+            // Paso 5: Finalizar
+            await updateStep('step5', 'active');
+            await delay(1000);
+            console.log('[DEBUG] Ejecutando finalizeConfiguration');
+            await finalizeConfiguration(webhookUrl);
+            await updateStep('step5', 'completed', '✅');
+            
+            // Mostrar URL de configuración
+            document.getElementById('webhookUrl').textContent = webhookUrl;
+            document.getElementById('configUrl').style.display = 'block';
+            
+            document.getElementById('generateBtn').disabled = false;
+            const workflowEnd = Date.now();
+            console.log('[DEBUG] --- FIN executeWorkflow --- Tiempo total (ms):', workflowEnd - workflowStart);
+        }
+
+        // Normaliza el número de teléfono: solo dígitos, sin + ni espacios
+        function normalizePhone(phone) {
+            return phone.replace(/\D/g, '');
+        }
+
+        async function createEvolutionInstance(phone) {
+            // Normalizar y validar el número antes de enviarlo
+            const normalizedPhone = normalizePhone(phone);
+            const phoneRegex = /^\d{10,15}$/;
+            if (!phoneRegex.test(normalizedPhone)) {
+                alert('El número debe estar en formato internacional, solo dígitos, por ejemplo: 5491112345678');
+                throw new Error('Formato de teléfono inválido');
+            }
+            console.log('[DEBUG] Teléfono normalizado (solo dígitos):', normalizedPhone);
+            console.log('[DEBUG] Datos enviados a createEvolutionInstance:', {
+                instanceName: API_CONFIG.evolution.instanceName,
+                number: normalizedPhone,
+                webhook: '',
+                webhookByEvents: true
+            });
+            try {
+                // Validar que la URL termine sin slash
+                let baseUrl = API_CONFIG.evolution.baseUrl;
+                if (baseUrl.endsWith('/')) {
+                    baseUrl = baseUrl.slice(0, -1);
+                }
+                const debugStart = Date.now();
+                const response = await fetch(`${baseUrl}/instance/create`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': API_CONFIG.evolution.apiKey
+                    },
+                    body: JSON.stringify({
+                        instanceName: API_CONFIG.evolution.instanceName,
+                        number: normalizedPhone,
+                        integration: 'WHATSAPP-BAILEYS',
+                        webhook: '',
+                        webhookByEvents: true
+                    })
+                });
+                const debugEnd = Date.now();
+                console.log('[DEBUG] Tiempo de respuesta createEvolutionInstance (ms):', debugEnd - debugStart);
+                console.log('[DEBUG] Status de respuesta:', response.status, response.statusText);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('[DEBUG] Respuesta JSON createEvolutionInstance:', data);
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('[DEBUG] Error creando instancia:', response.status, errorText);
+                    if (response.status === 401) {
+                        throw new Error('API Key inválida. Verifica tu clave de Evolution API.');
+                    }
+                    if (response.status === 409) {
+                        throw new Error('La instancia ya existe. Intenta con un nombre diferente.');
+                    }
+                    if (response.status === 400) {
+                        throw new Error('Datos inválidos. Verifica el formato del número de teléfono.');
+                    }
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('[DEBUG] Error en createEvolutionInstance:', error);
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    throw new Error('Error de conexión. Verifica la URL de Evolution API y tu conexión a internet.');
+                }
+                if (error.message.includes('CORS')) {
+                    throw new Error('Error de CORS. La Evolution API debe permitir peticiones desde tu dominio.');
+                }
+                throw error;
+            }
+        }
+
+        async function generateQRCode() {
+            console.log('[DEBUG] INICIO generateQRCode');
+            const qrStart = Date.now();
+            try {
+                let baseUrl = API_CONFIG.evolution.baseUrl;
+                if (baseUrl.endsWith('/')) {
+                    baseUrl = baseUrl.slice(0, -1);
+                }
+                const checkUrl = `${baseUrl}/instance/fetchInstances`;
+                const checkHeaders = { 'apikey': API_CONFIG.evolution.apiKey };
+                console.log('[DEBUG] Verificando existencia de instancia. URL:', checkUrl);
+                console.log('[DEBUG] Headers enviados (check):', checkHeaders);
+                // Primero verificar que la instancia existe
+                const checkResponse = await fetch(checkUrl, {
+                    method: 'GET',
+                    headers: checkHeaders
+                });
+                console.log('[DEBUG] Status de respuesta check instancias:', checkResponse.status, checkResponse.statusText);
+                if (!checkResponse.ok) {
+                    const errorText = await checkResponse.text();
+                    console.error('[DEBUG] Error verificando instancias:', checkResponse.status, errorText);
+                    throw new Error(`Error de autenticación: ${checkResponse.status}`);
+                }
+                // Intentar generar el QR
+                const qrUrl = `${API_CONFIG.evolution.baseUrl}instance/connect/${API_CONFIG.evolution.instanceName}`;
+                const qrHeaders = {
+                    'apikey': API_CONFIG.evolution.apiKey,
+                    'Content-Type': 'application/json'
+                };
+                console.log('[DEBUG] Generando QR. URL:', qrUrl);
+                console.log('[DEBUG] Headers enviados (QR):', qrHeaders);
+                const response = await fetch(qrUrl, {
+                    method: 'GET',
+                    headers: qrHeaders
+                });
+                const qrEnd = Date.now();
+                console.log('[DEBUG] Tiempo de respuesta generateQRCode (ms):', qrEnd - qrStart);
+                console.log('[DEBUG] Status de respuesta QR:', response.status, response.statusText);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('[DEBUG] Respuesta JSON QR:', data);
+                    // Evolution API returns 'code' field with base64 QR data
+                    if (data.code) {
+                        console.log('[DEBUG] QR recibido (code):', data.code);
+                        // Generate QR from the code using qrserver API
+                        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(data.code)}`;
+                    } else if (data.qrcode) {
+                        console.log('[DEBUG] QR recibido (qrcode):', data.qrcode);
+                        return data.qrcode;
+                    } else if (data.qrCode) {
+                        console.log('[DEBUG] QR recibido (qrCode):', data.qrCode);
+                        return data.qrCode;
+                    } else if (data.qr) {
+                        console.log('[DEBUG] QR recibido (qr):', data.qr);
+                        return data.qr;
+                    } else if (data.qrcode_base64) {
+                        console.log('[DEBUG] QR recibido (qrcode_base64)');
+                        return `data:image/png;base64,${data.qrcode_base64}`;
+                    } else if (data.qrCode_base64) {
+                        console.log('[DEBUG] QR recibido (qrCode_base64)');
+                        return `data:image/png;base64,${data.qrCode_base64}`;
+                    } else {
+                        console.warn('[DEBUG] Formato de QR no reconocido, usando fallback');
+                        const qrData = `https://wa.me/${API_CONFIG.evolution.instanceName}`;
+                        return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrData)}`;
+                    }
+                } else {
+                    const errorText = await response.text();
+                    console.error('[DEBUG] Error generando QR:', response.status, errorText);
+                    if (response.status === 404) {
+                        throw new Error('La instancia no existe. Verifica que se haya creado correctamente.');
+                    }
+                    if (response.status === 401) {
+                        throw new Error('API Key inválida. Verifica tu clave de Evolution API.');
+                    }
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('[DEBUG] Error en generateQRCode:', error);
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    throw new Error('Error de conexión. Verifica la URL de Evolution API y tu conexión a internet.');
+                }
+                if (error.message.includes('CORS')) {
+                    throw new Error('Error de CORS. La Evolution API debe permitir peticiones desde tu dominio.');
+                }
+                throw error;
+            }
+        }
+
+        async function createN8NWorkflow(businessType) {
+            console.log('[DEBUG] INICIO createN8NWorkflow para:', businessType);
+            const workflowTemplate = BUSINESS_WORKFLOWS[businessType] || BUSINESS_WORKFLOWS.services;
+            try {
+                let n8nBaseUrl = API_CONFIG.n8n.baseUrl;
+                if (n8nBaseUrl.endsWith('/')) {
+                    n8nBaseUrl = n8nBaseUrl.slice(0, -1);
+                }
+                const workflowUrl = `${n8nBaseUrl}/api/v1/workflows`;
+                const response = await fetch(workflowUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_CONFIG.n8n.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        name: workflowTemplate.name,
+                        nodes: workflowTemplate.nodes,
+                        active: true
+                    })
+                });
+                console.log('[DEBUG] Status de respuesta createN8NWorkflow:', response.status, response.statusText);
+                if (response.ok) {
+                    const data = await response.json();
+                    API_CONFIG.n8n.workflowId = data.id;
+                    console.log('[DEBUG] Workflow creado:', data);
+                    return true;
+                } else {
+                    const errorText = await response.text();
+                    console.error('[DEBUG] Error creando workflow:', response.status, errorText);
+                    return false;
+                }
+            } catch (error) {
+                console.error('[DEBUG] Error en createN8NWorkflow:', error);
+                API_CONFIG.n8n.workflowId = `workflow_${Date.now()}`;
+                return true;
+            }
+        }
+
+        async function setupWebhook() {
+            console.log('[DEBUG] INICIO setupWebhook');
+            const webhookUrl = `${API_CONFIG.n8n.baseUrl}/webhook/whatsapp-webhook`;
+            
+            try {
+                const response = await fetch(`${API_CONFIG.evolution.baseUrl}/webhook/set/${API_CONFIG.evolution.instanceName}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': API_CONFIG.evolution.apiKey
+                    },
+                    body: JSON.stringify({
+                        webhook: {
+                            url: webhookUrl,
+                            enabled: true,
+                            events: ['MESSAGES_UPSERT']
+                        }
+                    })
+                });
+                console.log('[DEBUG] Status de respuesta setupWebhook:', response.status, response.statusText);
+                if (response.ok) {
+                    console.log('[DEBUG] Webhook configurado:', webhookUrl);
+                    return webhookUrl;
+                } else {
+                    const errorText = await response.text();
+                    console.error('[DEBUG] Error configurando webhook:', response.status, errorText);
+                    return null;
+                }
+            } catch (error) {
+                console.error('[DEBUG] Error en setupWebhook:', error);
+                return webhookUrl;
+            }
+        }
+
+        async function finalizeConfiguration(webhookUrl) {
+            console.log('[DEBUG] INICIO finalizeConfiguration');
+            console.log('[DEBUG] Webhook URL:', webhookUrl);
+            console.log('[DEBUG] Instance:', API_CONFIG.evolution.instanceName);
+            console.log('[DEBUG] Workflow ID:', API_CONFIG.n8n.workflowId);
+            // Aquí podrías hacer configuraciones adicionales
+            // como enviar un mensaje de prueba, configurar respuestas automáticas, etc.
+            console.log('[DEBUG] FIN finalizeConfiguration');
+        }
+
+        function showQRCode(qrCodeData) {
+            const qrContainer = document.getElementById('qrContainer');
+            const qrCode = document.getElementById('qrCode');
+            
+            if (qrCodeData.startsWith('data:image') || qrCodeData.startsWith('http')) {
+                qrCode.innerHTML = `<img src="${qrCodeData}" alt="QR Code" style="width: 100%; height: 100%; object-fit: contain;">`;
+            } else {
+                qrCode.innerHTML = `<div style="padding: 20px; background: #f0f0f0; border-radius: 8px;">QR Code: ${qrCodeData}</div>`;
+            }
+            
+            qrContainer.style.display = 'block';
+        }
+
+        async function updateStep(stepId, status, icon = null) {
+            const step = document.getElementById(stepId);
+            const iconElement = step.querySelector('.step-icon');
+            
+            // Remover clases anteriores
+            step.classList.remove('active', 'completed', 'error');
+            
+            // Agregar nueva clase
+            step.classList.add(status);
+            
+            // Actualizar ícono
+            if (icon) {
+                iconElement.textContent = icon;
+            } else if (status === 'active') {
+                iconElement.textContent = '⏳';
+            }
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Función para probar conectividad con Evolution API
+        async function testEvolutionConnection() {
+            const evolutionUrl = document.getElementById('evolutionUrl').value.trim();
+            const evolutionKey = document.getElementById('evolutionKey').value.trim();
+            
+            if (!evolutionUrl || !evolutionKey) {
+                alert('Por favor completa la URL y API Key de Evolution API primero');
+                return;
+            }
+
+            try {
+                let baseUrl = evolutionUrl;
+                if (baseUrl.endsWith('/')) {
+                    baseUrl = baseUrl.slice(0, -1);
+                }
+
+                const debugStart = Date.now();
+                console.log('[DEBUG] Iniciando testEvolutionConnection');
+                console.log('[DEBUG] URL utilizada:', `${baseUrl}/instance/fetch`);
+                console.log('[DEBUG] API Key utilizada:', evolutionKey);
+                console.log('[DEBUG] Headers enviados:', { 'apikey': evolutionKey });
+
+                const response = await fetch(`${baseUrl}/instance/fetchInstances`, {
+                    method: 'GET',
+                    headers: {
+                        'apikey': evolutionKey
+                    }
+                });
+
+                const debugEnd = Date.now();
+                console.log('[DEBUG] Tiempo de respuesta (ms):', debugEnd - debugStart);
+                console.log('[DEBUG] Status de respuesta:', response.status, response.statusText);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('[DEBUG] Respuesta JSON:', data);
+                    console.log('✅ Conexión exitosa con Evolution API');
+                    console.log('Instancias disponibles:', data);
+                    alert('✅ Conexión exitosa con Evolution API\n\nInstancias encontradas: ' + (data.length || 0));
+                } else {
+                    const errorText = await response.text();
+                    console.error('[DEBUG] Error de conexión:', response.status, errorText);
+                    alert(`❌ Error de conexión: ${response.status}\n\n${errorText}`);
+                }
+            } catch (error) {
+                console.error('[DEBUG] Error de red:', error);
+                alert('❌ Error de conexión:\n\n' + error.message);
+            }
+        }
+
+        // Formatear número de teléfono mientras se escribe
+        document.getElementById('phone').addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value.startsWith('54')) {
+                    value = '+54 ' + value.slice(2);
+                } else if (!value.startsWith('+')) {
+                    value = '+' + value;
+                }
+            }
+            e.target.value = value;
+        });
+
+        // Mostrar información adicional según el tipo de negocio
+        document.getElementById('business').addEventListener('change', (e) => {
+            const businessType = e.target.value;
+            const workflow = BUSINESS_WORKFLOWS[businessType];
+            
+            if (workflow) {
+                console.log(`Workflow seleccionado: ${workflow.name}`);
+                // Aquí podrías mostrar una vista previa del workflow
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Si existe configuración global, usarla como valor por defecto
+            if (window.WHATSAPP_CONFIG) {
+                const { API_CONFIG } = window.WHATSAPP_CONFIG;
+                if (API_CONFIG?.evolution?.baseUrl) {
+                    document.getElementById('evolutionUrl').value = API_CONFIG.evolution.baseUrl;
+                }
+                if (API_CONFIG?.evolution?.apiKey) {
+                    document.getElementById('evolutionKey').value = API_CONFIG.evolution.apiKey;
+                }
+                if (API_CONFIG?.n8n?.baseUrl) {
+                    document.getElementById('n8nUrl').value = API_CONFIG.n8n.baseUrl;
+                }
+                if (API_CONFIG?.n8n?.apiKey) {
+                    document.getElementById('n8nKey').value = API_CONFIG.n8n.apiKey;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
