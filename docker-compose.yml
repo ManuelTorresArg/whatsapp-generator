@@ -26,9 +26,9 @@ services:
     depends_on:
       - n8n
     volumes:
-      # Montar config.js real (sobreescribe el config.example.js copiado en la imagen)
-      # Si no existe config.js en el host, crear uno basado en config.example.js
-      - ./config.js:/usr/share/nginx/html/config.js:ro
+      # OPCIONAL: Descomentar y crear config.js en el host para sobreescribir la config por defecto
+      # Primero ejecutar: cp config.example.js config.js && nano config.js
+      # - ./config.js:/usr/share/nginx/html/config.js:ro
     networks:
       - evolution-network
       - internal
