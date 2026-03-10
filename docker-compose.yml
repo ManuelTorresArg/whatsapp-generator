@@ -1,0 +1,83 @@
+# ==========================================
+# WhatsApp Generator + N8N
+# ==========================================
+# Uso:
+#   docker-compose up -d --build
+#
+# Puertos:
+#   - 3000: Frontend (Nginx) + proxy a Evolution API y N8N
+#   - 5678: N8N Web UI (acceso directo)
+# ==========================================
+
+version: '3.8'
+
+services:
+  # ==========================================
+  # Frontend + Reverse Proxy
+  # ==========================================
+  whatsapp-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: whatsapp-generator
+    restart: unless-stopped
+    ports:
+      - "${EXTERNAL_PORT:-3000}:80"
+    depends_on:
+      - n8n
+    networks:
+      - evolution-network
+      - internal
+
+  # ==========================================
+  # N8N - Automatización de Workflows
+  # ==========================================
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: whatsapp-n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_EXTERNAL_PORT:-5678}:5678"
+    environment:
+      # Configuración general
+      - N8N_HOST=0.0.0.0
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://localhost:3000}
+      # Configuración de base de datos (SQLite por defecto)
+      - DB_TYPE=sqlite
+      - DB_SQLITE_DATABASE=/home/node/.n8n/database.sqlite
+      # Seguridad
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-admin}
+      # Timezone
+      - GENERIC_TIMEZONE=${TIMEZONE:-America/Argentina/Buenos_Aires}
+      - TZ=${TIMEZONE:-America/Argentina/Buenos_Aires}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - evolution-network
+      - internal
+
+# ==========================================
+# Volúmenes persistentes
+# ==========================================
+volumes:
+  n8n_data:
+    driver: local
+
+# ==========================================
+# Redes
+# ==========================================
+networks:
+  # Red interna entre whatsapp-generator y n8n
+  internal:
+    driver: bridge
+
+  # Red externa compartida con Evolution API
+  # Debe coincidir con la red creada por el docker-compose de Evolution API
+  # Verificar nombre con: docker network ls
+  evolution-network:
+    external: true
+    name: ${EVOLUTION_NETWORK:-evolution-api_default}
