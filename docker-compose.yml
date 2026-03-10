@@ -25,10 +25,10 @@ services:
       - "${EXTERNAL_PORT:-3000}:80"
     depends_on:
       - n8n
-    volumes:
-      # OPCIONAL: Descomentar y crear config.js en el host para sobreescribir la config por defecto
-      # Primero ejecutar: cp config.example.js config.js && nano config.js
-      # - ./config.js:/usr/share/nginx/html/config.js:ro
+    # OPCIONAL: Para usar un config.js personalizado, descomentar las siguientes líneas:
+    # Primero ejecutar: cp config.example.js config.js && nano config.js
+    # volumes:
+    #   - ./config.js:/usr/share/nginx/html/config.js:ro
     networks:
       - evolution-network
       - internal
