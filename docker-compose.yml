@@ -44,10 +44,10 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - WEBHOOK_URL=${N8N_WEBHOOK_URL:-http://localhost:3000}
-      # Configuración de base de datos (SQLite por defecto)
+      # Base de datos SQLite
       - DB_TYPE=sqlite
       - DB_SQLITE_DATABASE=/home/node/.n8n/database.sqlite
-      # Seguridad
+      # Autenticación
       - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE:-true}
       - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER:-admin}
       - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD:-admin}
@@ -76,8 +76,9 @@ networks:
     driver: bridge
 
   # Red externa compartida con Evolution API
-  # Debe coincidir con la red creada por el docker-compose de Evolution API
-  # Verificar nombre con: docker network ls
+  # Nombre real: evolution-api_evolution-network
+  # (prefijo del proyecto "evolution-api" + nombre de red "evolution-network")
+  # Verificar con: docker network ls
   evolution-network:
     external: true
-    name: ${EVOLUTION_NETWORK:-evolution-api_default}
+    name: ${EVOLUTION_NETWORK:-evolution-api_evolution-network}

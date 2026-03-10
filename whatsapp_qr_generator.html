@@ -248,6 +248,7 @@
             border-radius: 6px;
         }
     </style>
+    <script src="config.js"></script>
 </head>
 <body>
     <div class="container">
@@ -283,12 +284,12 @@
             <div class="api-config">
                 <h3>⚙️ Configuración de APIs</h3>
                 <div class="api-row">
-                    <input type="text" id="evolutionUrl" placeholder="Evolution API URL" value="https://api.evolution.com">
+                    <input type="text" id="evolutionUrl" placeholder="Evolution API URL" value="/evo">
                     <input type="text" id="evolutionKey" placeholder="Evolution API Key" required>
                     <button type="button" onclick="testEvolutionConnection()" style="padding: 10px; background: #4299e1; color: white; border: none; border-radius: 6px; cursor: pointer;">🔍 Probar</button>
                 </div>
                 <div class="api-row">
-                    <input type="text" id="n8nUrl" placeholder="N8N API URL" value="https://n8n.yourdomain.com">
+                    <input type="text" id="n8nUrl" placeholder="N8N API URL" value="/n8n-api">
                     <input type="text" id="n8nKey" placeholder="N8N API Key" required>
                 </div>
                 <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
