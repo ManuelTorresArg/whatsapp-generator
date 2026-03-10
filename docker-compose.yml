@@ -25,6 +25,10 @@ services:
       - "${EXTERNAL_PORT:-3000}:80"
     depends_on:
       - n8n
+    volumes:
+      # Montar config.js real (sobreescribe el config.example.js copiado en la imagen)
+      # Si no existe config.js en el host, crear uno basado en config.example.js
+      - ./config.js:/usr/share/nginx/html/config.js:ro
     networks:
       - evolution-network
       - internal

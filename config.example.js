@@ -15,7 +15,7 @@ const API_CONFIG = {
     // Configuración de Evolution API (WhatsApp)
     evolution: {
         // URL de tu servidor Evolution API
-        baseUrl: 'https://tu-evolution-api.com',
+        baseUrl: '/evo', // Proxy Nginx → Evolution API (Docker)
         
         // Tu API Key de Evolution API
         apiKey: 'tu-api-key-aqui',
@@ -36,7 +36,7 @@ const API_CONFIG = {
     // Configuración de N8N (Automatización)
     n8n: {
         // URL de tu servidor N8N
-        baseUrl: 'https://tu-n8n-server.com',
+        baseUrl: '/n8n-api', // Proxy Nginx → N8N (Docker)
         
         // Tu API Key de N8N
         apiKey: 'tu-n8n-api-key-aqui',
